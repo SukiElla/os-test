@@ -1,5 +1,5 @@
 
-#include <conio.h>
+// #include <conio.h>
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -15,17 +15,17 @@ FILE* fd;
 struct inode* cur_path_inode;
 int user_id;
 
-void main() {
+int main() {
   unsigned short ab_fd1, ab_fd2, ab_fd3, ab_fd4;
   unsigned short bhy_fd1;
   char* buf;
 
   printf("\nDo you want to format the disk \n");
-  if (getch() == 'y')
+  if (getchar() == 'y')
     printf(
         "\nFormat Will erase all context on the disk \nAre You Sure! "
         "(y(es)/n(o)! \n");
-  if (getch() == 'y') format();
+  if (getchar() == 'y') format();
   /*
 
           install();

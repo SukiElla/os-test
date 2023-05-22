@@ -2,6 +2,7 @@
 #include <stdio.h>
 
 #include "filesys.h"
+#include <stdlib.h>
 
 struct inode *iget(dinodeid) /* iget( ) */
 unsigned int dinodeid;
@@ -52,7 +53,7 @@ iput(pinode) /* iput ( ) */
   int i;
   if (pinode->i_count > 1) {
     pinode->i_count--;
-    return;
+    return 0;
   } else {
     if (pinode->di_number != 0) {
       /*write back the mode */

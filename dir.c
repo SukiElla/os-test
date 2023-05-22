@@ -55,7 +55,7 @@ mkdir(dirname) /* mkdir */
       printf("\n%s is a file name, &can't create a dir the same name", dirname);
 
     iput(inode);
-    return;
+    return 0;
   }
 
   dirpos = iname(dirname);
@@ -78,7 +78,7 @@ mkdir(dirname) /* mkdir */
   inode->di_gid = user[user_id].u_gid;
   inode->di_addr[0] = block;
   iput(inode);
-  return;
+  return 0;
 }
 chdir(dirname) /* chdir */
     char *dirname;
@@ -90,13 +90,13 @@ chdir(dirname) /* chdir */
   dirid = namei(dirname);
   if (dirid == NULL) {
     printf("\n%s does not existed\n", dirname);
-    return;
+    return 0;
   }
   inode = iget(dirid);
   if (!access(user_id, inode, user[user_id].u_default_mode)) {
     printf("\nhas not access to the directory %s", dirname);
     iput(inode);
-    return;
+    return 0;
   }
   /* pack the current directory */
   for (i = 0; i < dir.size; i++) {
@@ -131,5 +131,5 @@ chdir(dirname) /* chdir */
     j += BLOCKSIZ / (DIRSIZ + 2);
   };
 
-  return;
+  return 0;
 }
