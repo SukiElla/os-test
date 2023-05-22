@@ -36,4 +36,3 @@ char	* name;
 		return i;
 	}
 }
-
