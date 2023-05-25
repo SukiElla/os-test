@@ -4,27 +4,30 @@
 #include <string.h>
 
 #include "filesys.h"
+// ls
 _dir() /* _dir */
 {
   unsigned int di_mode;
   int i, one;
   struct inode *temp_inode;
-  printf("\nCURRENT DIRECTORY ..\n");
+  printf("CURRENT DIRECTORY is\n");
+  // list the dir
   for (i = 0; i < dir.size; i++) {
     if (dir.direct[i].d_ino != DIEMPTY) {
-      printf("%DIRSIZs", dir.direct[i].d_name);
-      temp_inode = iget(dir.direct[i].d_ino);
+      printf("%s", dir.direct[i].d_name);
+      temp_inode = iget(dir.direct[i].d_ino);  // get the inode by ino
       di_mode = temp_inode->di_mode;
-      for (i = 0; i < 9; i++) {
-        one = di_mode % 2;
-        di_mode = di_mode / 2;
-        if (one)
-          printf("x");
-        else
-          printf("-");
-      }
-      if (temp_inode->di_mode && DIFILE == 1) {
-        printf("%ld\n", temp_inode->di_size);
+      // for (i = 0; i < 9; i++) {
+      //   one = di_mode % 2;
+      //   di_mode = di_mode / 2;
+      //   if (one)
+      //     printf("x");
+      //   else
+      //     printf("-");
+      // }
+      if (temp_inode->di_mode &&
+          DIFILE == 1) {  // if file, print the size and the block chain
+        printf("%d\n", temp_inode->di_size);
         printf("block chain:");
         for (i = 0; i < temp_inode->di_size / BLOCKSIZ + 1; i++)
           printf("%4d", temp_inode->di_addr[i]);
@@ -36,19 +39,18 @@ _dir() /* _dir */
   }
 }
 
-mkdir(dirname) /* mkdir */
-    char *dirname;
+mkdir(char *dirname) /* mkdir */
 {
   int dirid, dirpos;
-
+dir
   struct inode *inode;
 
   struct direct buf[BLOCKSIZ / (DIRSIZ + 2)];
   unsigned int block;
 
-  dirid = namei(dirname);
-  if (dirid != NULL) {
-    inode = iget(dirid);
+  dirid = namei(dirname);  // get the ino by name
+  if (dirid != 0) {
+    inode = iget(dirid);  // get the inode by ino
     if (inode->di_mode & DIDIR)
       printf("\n%s directory already existed! ! \n");
     else
@@ -59,19 +61,19 @@ mkdir(dirname) /* mkdir */
   }
 
   dirpos = iname(dirname);
-  inode = ialloc();
-  inode->i_ino = dirid;
+  inode = ialloc();  // alloc the new inode
+  dirid = inode->i_ino;
   dir.direct[dirpos].d_ino = inode->i_ino;
   dir.size++;
   /*	fill the new dir buf */
-  strcpy(buf[0].d_name, ".");
+  strcpy(buf[0].d_name, "..");  // for dir, the fisrt is '.', the second is '..'
   buf[0].d_ino = dirid;
-  strcpy(buf[1].d_name, "..");
+  strcpy(buf[1].d_name, ".");
   buf[1].d_ino = cur_path_inode->i_ino;
-  block = balloc();
+  block = balloc();  // alloc the block
   fseek(fd, DATASTART + block * BLOCKSIZ, SEEK_SET);
   fwrite(buf, 1, BLOCKSIZ, fd);
-  inode->di_size = 2 * (DIRSIZ + 2);
+  inode->di_size = 2 * (DIRSIZ + 4);
   inode->di_number = 1;
   inode->di_mode = user[user_id].u_default_mode;
   inode->di_uid = user[user_id].u_uid;
@@ -80,8 +82,8 @@ mkdir(dirname) /* mkdir */
   iput(inode);
   return 0;
 }
-chdir(dirname) /* chdir */
-    char *dirname;
+
+chdir(char *dirname) /* chdir */
 {
   unsigned int dirid;
   struct inode *inode;
@@ -99,10 +101,11 @@ chdir(dirname) /* chdir */
     return 0;
   }
   /* pack the current directory */
+  // incorrect? 
   for (i = 0; i < dir.size; i++) {
     for (j = 0; j < DIRNUM; j++)
       if (dir.direct[j].d_ino == 0) break;
-    memcpy(&dir.direct[i], &dir.direct[j], DIRSIZ + 2);
+    memcpy(&dir.direct[i], &dir.direct[j], DIRSIZ + 4);
     dir.direct[j].d_ino = 0;
   }
 

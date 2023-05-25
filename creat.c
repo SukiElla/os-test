@@ -2,21 +2,18 @@
 #include <stdio.h>
 
 #include "filesys.h"
-creat(user_id, filename, mode) unsigned int user_id;
-char* filename;
-unsigned short mode;
-{
+creat(unsigned int user_id, char* filename, unsigned short mode) {
   unsigned int di_ith, di_ino;
   struct inode* inode;
   int i, j;
   di_ino = namei(filename);  // ???
-  if (di_ino != NULL)        /* already existed */
+  if (di_ino != 0)        /* already existed */
   {
     inode = iget(di_ino);
     if (access(user_id, inode, inode) == 0) {
       iput(inode);
       printf("\rcreat access not allowed \n");
-      return -1;
+      return 0;
     }
     /* free all the block of the old file */
     for (i = 0; i < inode->di_size / BLOCKSIZ + 1; i++) {
@@ -46,22 +43,25 @@ unsigned short mode;
     dir.size++;
 
     dir.direct[di_ith].d_ino = inode->i_ino;
+    dir.direct[di_ith + 1].d_ino = 0;
 
-    inode->di_mode = user[user_id].u_default_mode;
+    inode->di_mode = user[user_id].u_default_mode | DIFILE;
     inode->di_uid = user[user_id].u_uid;
     inode->di_gid = user[user_id].u_gid;
     inode->di_size = 0;
-    inode->di_number = 0;
+    inode->di_number = 1;
 
     for (i = 0; i < SYSOPENFILE; i++)
       if (sys_ofile[i].f_count == 0) {
         break;
       }
 
-    for (j = 0; j < NOFILE; j++)
+    for (j = 0; j < NOFILE; j++) {
       if (user[user_id].u_ofile[j] == SYSOPENFILE + 1) {
         break;
       }
+    }
+
     user[user_id].u_ofile[j] = i;
     sys_ofile[i].f_flag = mode;
     sys_ofile[i].f_count = 0;
@@ -69,5 +69,4 @@ unsigned short mode;
     sys_ofile[i].f_inode = inode;
     return j;
   }
-  return -1;  //????
 }

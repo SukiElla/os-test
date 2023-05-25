@@ -47,23 +47,24 @@ unsigned int size;
   return size;
 }
 
-unsigned int write(fd, buf, size)
-int fd;
+unsigned int write(fd1, buf, size)
+int fd1;
 char* buf;
 unsigned int size;
 {
+  FILE *fd = fopen("filesystem", "r+w+b");
   unsigned long off;
   int block, block_off, i, j;
   struct inode* inode;
   char* temp_buf;
-  inode = sys_ofile[user[user_id].u_ofile[fd]].f_inode;
-  if (!(sys_ofile[user[user_id].u_ofile[fd]].f_flag & FWRITE)) {
+  inode = sys_ofile[user[user_id].u_ofile[fd1]].f_inode;
+  if (!(sys_ofile[user[user_id].u_ofile[fd1]].f_flag & FWRITE)) {
     printf("\n the file is not opened for write\n");
     return 0;
   }
   temp_buf = buf;
 
-  off = sys_ofile[user[user_id].u_ofile[fd]].f_off;
+  off = sys_ofile[user[user_id].u_ofile[fd1]].f_off;
   block_off = off % BLOCKSIZ;
   block = off / BLOCKSIZ;
 
@@ -87,6 +88,6 @@ unsigned int size;
   block = inode->di_addr[off + size / BLOCKSIZ + 1];
   fseek(fd, DATASTART + block * BLOCKSIZ, SEEK_SET);
   fwrite(temp_buf, 1, block_off, fd);
-  sys_ofile[user[user_id].u_ofile[fd]].f_off += size;
+  sys_ofile[user[user_id].u_ofile[fd1]].f_off += size;
   return size;
 }

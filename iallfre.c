@@ -42,8 +42,7 @@ struct inode* ialloc() {
   filsys.s_fmod = SUPDATE;
   return temp_inode;
 }
-ifree(dinodeid) /* ifree */
-    unsigned dinodeid;
+ifree(unsigned int dinodeid) /* ifree */
 {
   filsys.s_ninode++;
   if (filsys.s_pinode != NICINOD) /* notfull */
