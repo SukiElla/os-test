@@ -29,8 +29,8 @@ _dir() /* _dir */
           DIFILE) {  // if file, print the size and the block chain
         printf("%d\n", temp_inode->di_size);
         printf("block chain:");
-        for (i = 0; i < temp_inode->di_size / BLOCKSIZ + 1; i++)
-          printf("%4d", temp_inode->di_addr[i]);
+        // for (i = 0; i < temp_inode->di_size / BLOCKSIZ + 1; i++)
+        //   printf("%4d", temp_inode->di_addr[i]);
         printf("\n");
       } else
         printf("<dir>\n");
@@ -107,11 +107,12 @@ chdir(char *dirname) /* chdir */
   }
   /* pack the current directory */
   // incorrect?
+  // must?
   for (i = 0; i < dir.size; i++) {
     for (j = 0; j < DIRNUM; j++)
       if (dir.direct[j].d_ino == 0) break;
-    memcpy(&dir.direct[i], &dir.direct[j], sizeof(struct direct));
-    dir.direct[j].d_ino = 0;
+    memcpy(&dir.direct[j], &dir.direct[i], sizeof(struct direct));
+    dir.direct[i].d_ino = 0;
   }
 
   /*	write back the current directory */
@@ -124,8 +125,9 @@ chdir(char *dirname) /* chdir */
     block = balloc();
     cur_path_inode->di_addr[i] = block;
     fseek(fd, DATASTART + block * BLOCKSIZ, SEEK_SET);
-    fwrite(&dir.direct[j], 1, BLOCKSIZ, fd);
+    fwrite(&dir.direct[i], 1, BLOCKSIZ, fd);
   }
+
   cur_path_inode->di_size = dir.size * (sizeof(struct direct));
   iput(cur_path_inode);
   cur_path_inode = inode;
@@ -139,6 +141,6 @@ chdir(char *dirname) /* chdir */
     fread(&dir.direct[0], 1, BLOCKSIZ, fd);
     j += BLOCKSIZ / (sizeof(struct direct));
   };
-
+  
   return 0;
 }

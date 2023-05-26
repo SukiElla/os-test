@@ -52,7 +52,6 @@ int fd1;
 char* buf;
 unsigned int size;
 {
-  FILE* fd = fopen("filesystem", "r+w+b");
   unsigned long off;
   int block, block_off, i, j;
   struct inode* inode;
@@ -90,6 +89,5 @@ unsigned int size;
   fseek(fd, DATASTART + block * BLOCKSIZ, SEEK_SET);
   fwrite(temp_buf, 1, block_off, fd);
   sys_ofile[user[user_id].u_ofile[fd1]].f_off += size;
-  fclose(fd);
   return size;
 }

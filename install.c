@@ -59,5 +59,6 @@ int install() {
   fseek(fd, BLOCKSIZ, SEEK_SET);
   fread(&filsys, 1, sizeof(struct filsys), fd);
 
+  fclose(fd);
   return 0;
 }

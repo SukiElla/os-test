@@ -32,6 +32,7 @@ char *name;
   } else {
     strcpy(dir.direct[i].d_name, name);
     dir.direct[i].d_ino = 1;
+    printf("name: the name is %s, the i is %d\n", name, i);
     return i;
   }
 }
