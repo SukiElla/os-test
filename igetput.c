@@ -53,8 +53,8 @@ struct inode *iget(unsigned int dinodeid) /* iget( ) */
   newinode->i_flag = 0; /* flag for not update */
   newinode->i_ino = dinodeid;
 
-  newinode->di_size = 3 * (DIRSIZ + 2);
-  if(dinodeid == 3) {
+  newinode->di_size = 3 * (sizeof(struct direct));
+  if (dinodeid == 3) {
     newinode->di_size = BLOCKSIZ;
   }
   return newinode;

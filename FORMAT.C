@@ -6,7 +6,7 @@
 #include "filesys.h"
 format() {
   struct inode* inode;
-  struct direct dir_buf[BLOCKSIZ / (DIRSIZ + 4)];  // one block can contain
+  struct direct dir_buf[BLOCKSIZ / (sizeof(struct direct))];  // one block can contain
                                                    // direct struct number
   struct pwd passwd[BLOCKSIZ / (PWDSIZ + 4)];
 
@@ -48,7 +48,7 @@ format() {
   inode = iget(1); /* 1 main dir id */
   inode->di_number = 1;
   inode->di_mode = DEFAULTMODE | DIDIR;
-  inode->di_size = 3 * (DIRSIZ + 4);
+  inode->di_size = 3 * (sizeof(struct direct));
   inode->di_addr[0] = 0; /* block 0tfl is used by the main directory */
   strcpy(dir_buf[0].d_name, "..");
   dir_buf[0].d_ino = 1;
@@ -56,13 +56,18 @@ format() {
   dir_buf[1].d_ino = 1;
   strcpy(dir_buf[2].d_name, "etc");
   dir_buf[2].d_ino = 2;
+  printf("the size is %d\n", sizeof(struct direct));
   fseek(fd, DATASTART, SEEK_SET);
-  fwrite(dir_buf, 1, 3 * (DIRSIZ + 4), fd);
+  fwrite(dir_buf, 1, 3 * (sizeof(struct direct)), fd);
+  // printf("format.c: the name is %s %d", dir_buf[2].d_name, dir_buf[2].d_ino);
+
+
+
   iput(inode);
   inode = iget(2); /* 2 etc dir id */
   inode->di_number = 1;
   inode->di_mode = DEFAULTMODE | DIDIR;
-  inode->di_size = 3 * (DIRSIZ + 4);
+  inode->di_size = 3 * (sizeof(struct direct));
   inode->di_addr[0] = 0; /* block 0# is used by the etc */
   strcpy(dir_buf[0].d_name, "..");
   dir_buf[0].d_ino = 1;
@@ -71,7 +76,7 @@ format() {
   strcpy(dir_buf[2].d_name, "password");
   dir_buf[2].d_ino = 3;
   fseek(fd, DATASTART + BLOCKSIZ * 1, SEEK_SET);
-  fwrite(dir_buf, 1, 3 * (DIRSIZ + 4), fd);
+  fwrite(dir_buf, 1, 3 * (sizeof(struct direct)), fd);
 
   iput(inode);
   inode = iget(3); /* 3 password id */

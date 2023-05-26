@@ -10,7 +10,7 @@ _dir() /* _dir */
   unsigned int di_mode;
   int i, one;
   struct inode *temp_inode;
-  printf("CURRENT DIRECTORY is\n");
+  printf("\nCURRENT DIRECTORY is\n");
   // list the dir
   for (i = 0; i < dir.size; i++) {
     if (dir.direct[i].d_ino != DIEMPTY) {
@@ -25,8 +25,8 @@ _dir() /* _dir */
       //   else
       //     printf("-");
       // }
-      if (temp_inode->di_mode &&
-          DIFILE == 1) {  // if file, print the size and the block chain
+      if ((temp_inode->di_mode & DIFILE) ==
+          DIFILE) {  // if file, print the size and the block chain
         printf("%d\n", temp_inode->di_size);
         printf("block chain:");
         for (i = 0; i < temp_inode->di_size / BLOCKSIZ + 1; i++)
@@ -42,10 +42,11 @@ _dir() /* _dir */
 mkdir(char *dirname) /* mkdir */
 {
   int dirid, dirpos;
-dir
+
   struct inode *inode;
 
-  struct direct buf[BLOCKSIZ / (DIRSIZ + 2)];
+  struct direct buf[BLOCKSIZ / (sizeof(struct direct))];
+  memset(buf, 0, sizeof(buf));
   unsigned int block;
 
   dirid = namei(dirname);  // get the ino by name
@@ -59,27 +60,31 @@ dir
     iput(inode);
     return 0;
   }
-
   dirpos = iname(dirname);
   inode = ialloc();  // alloc the new inode
   dirid = inode->i_ino;
+
   dir.direct[dirpos].d_ino = inode->i_ino;
   dir.size++;
+
   /*	fill the new dir buf */
   strcpy(buf[0].d_name, "..");  // for dir, the fisrt is '.', the second is '..'
   buf[0].d_ino = dirid;
   strcpy(buf[1].d_name, ".");
   buf[1].d_ino = cur_path_inode->i_ino;
+  buf[2].d_ino = 0;
   block = balloc();  // alloc the block
   fseek(fd, DATASTART + block * BLOCKSIZ, SEEK_SET);
   fwrite(buf, 1, BLOCKSIZ, fd);
-  inode->di_size = 2 * (DIRSIZ + 4);
+
+  inode->di_size = 2 * (sizeof(struct direct));
   inode->di_number = 1;
   inode->di_mode = user[user_id].u_default_mode;
   inode->di_uid = user[user_id].u_uid;
   inode->di_gid = user[user_id].u_gid;
   inode->di_addr[0] = block;
   iput(inode);
+
   return 0;
 }
 
@@ -101,11 +106,11 @@ chdir(char *dirname) /* chdir */
     return 0;
   }
   /* pack the current directory */
-  // incorrect? 
+  // incorrect?
   for (i = 0; i < dir.size; i++) {
     for (j = 0; j < DIRNUM; j++)
       if (dir.direct[j].d_ino == 0) break;
-    memcpy(&dir.direct[i], &dir.direct[j], DIRSIZ + 4);
+    memcpy(&dir.direct[i], &dir.direct[j], sizeof(struct direct));
     dir.direct[j].d_ino = 0;
   }
 
@@ -115,23 +120,24 @@ chdir(char *dirname) /* chdir */
     bfree(cur_path_inode->di_addr[i]);
   }
 
-  for (i = 0; i < dir.size; i += BLOCKSIZ / (DIRSIZ + 2)) {
+  for (i = 0; i < dir.size; i += BLOCKSIZ / (sizeof(struct direct))) {
     block = balloc();
     cur_path_inode->di_addr[i] = block;
     fseek(fd, DATASTART + block * BLOCKSIZ, SEEK_SET);
     fwrite(&dir.direct[j], 1, BLOCKSIZ, fd);
   }
-  cur_path_inode->di_size = dir.size * (DIRSIZ + 2);
+  cur_path_inode->di_size = dir.size * (sizeof(struct direct));
   iput(cur_path_inode);
   cur_path_inode = inode;
+  dir.size = inode->di_size / (sizeof(struct direct));
 
   /*	read the change dir from disk */
   j = 0;
 
   for (i = 0; i < inode->di_size / BLOCKSIZ + 1; i++) {
     fseek(fd, DATASTART + inode->di_addr[i] * BLOCKSIZ, SEEK_SET);
-    fread(&dir.direct[j], 1, BLOCKSIZ, fd);
-    j += BLOCKSIZ / (DIRSIZ + 2);
+    fread(&dir.direct[0], 1, BLOCKSIZ, fd);
+    j += BLOCKSIZ / (sizeof(struct direct));
   };
 
   return 0;

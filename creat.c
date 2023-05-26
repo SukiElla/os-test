@@ -10,10 +10,9 @@ creat(unsigned int user_id, char* filename, unsigned short mode) {
   if (di_ino != 0)        /* already existed */
   {
     inode = iget(di_ino);
-    if (access(user_id, inode, inode) == 0) {
+    if (access(user_id, inode, mode) == 0) {
       iput(inode);
-      printf("\rcreat access not allowed \n");
-      return 0;
+      printf("\rcreat access not allowed \n"); return 0;
     }
     /* free all the block of the old file */
     for (i = 0; i < inode->di_size / BLOCKSIZ + 1; i++) {
@@ -43,7 +42,7 @@ creat(unsigned int user_id, char* filename, unsigned short mode) {
     dir.size++;
 
     dir.direct[di_ith].d_ino = inode->i_ino;
-    dir.direct[di_ith + 1].d_ino = 0;
+    // dir.direct[di_ith + 1].d_ino = 0;
 
     inode->di_mode = user[user_id].u_default_mode | DIFILE;
     inode->di_uid = user[user_id].u_uid;
@@ -51,10 +50,11 @@ creat(unsigned int user_id, char* filename, unsigned short mode) {
     inode->di_size = 0;
     inode->di_number = 1;
 
-    for (i = 0; i < SYSOPENFILE; i++)
+    for (i = 0; i < SYSOPENFILE; i++) {
       if (sys_ofile[i].f_count == 0) {
         break;
       }
+    }
 
     for (j = 0; j < NOFILE; j++) {
       if (user[user_id].u_ofile[j] == SYSOPENFILE + 1) {

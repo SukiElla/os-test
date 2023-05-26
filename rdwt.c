@@ -52,7 +52,7 @@ int fd1;
 char* buf;
 unsigned int size;
 {
-  FILE *fd = fopen("filesystem", "r+w+b");
+  FILE* fd = fopen("filesystem", "r+w+b");
   unsigned long off;
   int block, block_off, i, j;
   struct inode* inode;
@@ -84,10 +84,12 @@ unsigned int size;
     fwrite(temp_buf, 1, BLOCKSIZ, fd);
     temp_buf += BLOCKSIZ;
   }
+
   block_off = (size - block_off) % BLOCKSIZ;
   block = inode->di_addr[off + size / BLOCKSIZ + 1];
   fseek(fd, DATASTART + block * BLOCKSIZ, SEEK_SET);
   fwrite(temp_buf, 1, block_off, fd);
   sys_ofile[user[user_id].u_ofile[fd1]].f_off += size;
+  fclose(fd);
   return size;
 }

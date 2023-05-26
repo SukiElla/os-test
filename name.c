@@ -3,6 +3,7 @@
 #include <string.h>
 
 #include "filesys.h"
+// find the d_ino by name
 unsigned int namei(name) /* namei */
 char *name;
 {
@@ -12,7 +13,7 @@ char *name;
       return dir.direct[i].d_ino; /* find */
   }
   /* notfind */
-  return NULL;
+  return 0;
 };
 
 unsigned short iname(name) /* iname */
