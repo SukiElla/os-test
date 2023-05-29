@@ -47,7 +47,7 @@ struct inode {
   char i_flag;
   unsigned int i_ino;
   unsigned int i_count;
-  unsigned short di_number;
+  unsigned short di_number; // what is it
   unsigned short di_mode;
   unsigned short di_uid;
   unsigned short di_gid;
@@ -108,7 +108,7 @@ struct user {
   unsigned short u_default_mode;
   unsigned short u_uid;
   unsigned short u_gid;
-  unsigned short u_ofile[NOFILE];
+  unsigned short u_ofile[NOFILE]; // what?
 };
 
 extern struct hinode hinode[NHINO];
@@ -120,24 +120,24 @@ extern struct user user[USERNUM];
 extern FILE *fd;
 extern struct inode *cur_path_inode;
 extern int user_id;
-extern struct inode *iget();
+extern struct inode *iget(unsigned int);
 extern iput();
 extern unsigned int balloc();
 extern bfree();
 extern struct inode *ialloc();
-extern ifree();
+extern ifree(unsigned int);
 extern unsigned int namei();
 extern unsigned short iname();
-extern unsigned int access();
+extern unsigned int access(unsigned int, struct inode*, unsigned short);
 extern _dir();
-extern mkdir();
-extern chdir();
+extern mkdir(char *);
+extern chdir(char *);
 extern unsigned short aopen();
-extern creat();
+extern creat(unsigned int, char*, unsigned short);
 extern unsigned int read();
 extern unsigned int write();
-extern int login();
-extern logout();
+extern int login(unsigned short, char *);
+extern logout(unsigned short uid);
 extern install();
 extern format();
 extern close();

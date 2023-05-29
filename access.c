@@ -4,11 +4,9 @@
 
 #include "filesys.h"
 
-unsigned int access(user_id, inode, mode)
-unsigned int user_id;
-struct inode* inode;
-unsigned short mode;
+unsigned int access(unsigned int user_id, struct inode* inode, unsigned short mode)
 {
+  // O: other user, G: group user, U: user
   switch (mode) {
     case READ:
       if (inode->di_mode & ODIREAD) return 1;
@@ -36,7 +34,11 @@ unsigned short mode;
           (user[user_id].u_uid == inode->di_uid))
         return 1;
       return 0;
+
+    case DEFAULTMODE:
+      return 1;
     defualt:
       return 0;
   }
+  return 0;
 }

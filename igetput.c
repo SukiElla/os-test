@@ -1,11 +1,10 @@
 /*获取释放i节点内容程序iget()/iput()*/
 #include <stdio.h>
-
-#include "filesys.h"
 #include <stdlib.h>
 
-struct inode *iget(dinodeid) /* iget( ) */
-unsigned int dinodeid;
+#include "filesys.h"
+
+struct inode *iget(unsigned int dinodeid) /* iget( ) */
 {
   int existed = 0, inodeid;
   long addr;
@@ -31,17 +30,33 @@ unsigned int dinodeid;
   /*	2. malloc the new mode */
   newinode = (struct inode *)malloc(sizeof(struct inode));
   /*	3.read the dinode to the mode */
+  if (fd == NULL) {
+    printf("error");
+  }
   fseek(fd, addr, SEEK_SET);
   fread(&(newinode->di_number), DINODESIZ, 1, fd);
   /* 4.put it into hinode[inodeid] queue */
-  newinode->i_forw = hinode[inodeid].i_forw;
-  newinode->i_back = newinode;
-  newinode->i_forw->i_back = newinode;
-  hinode[inodeid].i_forw = newinode;
-  /* 5.initialize the mode */
+  if (hinode[inodeid].i_forw == NULL) {
+    /* hinode[inodeid].i_forw is empty */
+    newinode->i_forw = newinode;
+    newinode->i_back = newinode;
+    hinode[inodeid].i_forw = newinode;
+  } else {
+    /* hinode[inodeid].i_forw is not empty */
+    newinode->i_forw = hinode[inodeid].i_forw;
+    newinode->i_back = newinode;
+    newinode->i_forw->i_back = newinode;
+    hinode[inodeid].i_forw = newinode;
+  }
+  // /* 5.initialize the mode */
   newinode->i_count = 1;
   newinode->i_flag = 0; /* flag for not update */
   newinode->i_ino = dinodeid;
+
+  newinode->di_size = 3 * (sizeof(struct direct));
+  if (dinodeid == 3) {
+    newinode->di_size = BLOCKSIZ;
+  }
   return newinode;
 }
 
@@ -64,7 +79,7 @@ iput(pinode) /* iput ( ) */
       /*	rm the mode & the block of the file in the disk */
       block_num = pinode->di_size / BLOCKSIZ;
       for (i = 0; i < block_num; i++) {
-        balloc(pinode->di_addr[i]);
+        bfree(pinode->di_addr[i]);
       }
       ifree(pinode->i_ino);
     };
@@ -76,6 +91,6 @@ iput(pinode) /* iput ( ) */
       pinode->i_forw->i_back = pinode->i_back;
       pinode->i_back->i_forw = pinode->i_forw;
     };
-    free(pinode);
-  };
+    ifree(pinode);
+  }
 }

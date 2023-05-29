@@ -5,10 +5,10 @@
 
 #include "filesys.h"
 
-install() {
+int install() {
   int i, j;
   /*0.open the file column */
-  fd = fopen("filesystem", "w+r+b");
+  fd = fopen("filesystem", "rwb+");
   if (fd == NULL) {
     printf("\nfilesys can not be loaded\n");
     exit(0);
@@ -35,17 +35,30 @@ install() {
   }
   /* 5. read the main directory to initialize the dir */
   cur_path_inode = iget(1);
-  dir.size = cur_path_inode->di_size / (DIRSIZ + 2);
+  dir.size = cur_path_inode->di_size / (sizeof(struct direct));
   for (i = 0; i < DIRNUM; i++) {
-    strcpy(dir.direct[i].d_name, "                 ");
+    strcpy(dir.direct[i].d_name, "             ");
     dir.direct[i].d_ino = 0;
   }
-  for (i = 0; i < dir.size / (BLOCKSIZ / (DIRSIZ + 2)); i++) {
+
+  for (i = 0; i < dir.size / (BLOCKSIZ / (sizeof(struct direct))); i++) {
     fseek(fd, DATASTART + BLOCKSIZ * cur_path_inode->di_addr[i], SEEK_SET);
-    fread(&dir.direct[(BLOCKSIZ / (DIRSIZ + 2)) * i], 1, BLOCKSIZ, fd);
+    fread(&dir.direct[(BLOCKSIZ / (sizeof(struct direct))) * i], 1, BLOCKSIZ, fd);
   }
   fseek(fd, DATASTART + BLOCKSIZ * cur_path_inode->di_addr[i], SEEK_SET);
-  fread(&dir.direct[(BLOCKSIZ) / (DIRSIZ + 2) * i], 1,
+  fread(&dir.direct[(BLOCKSIZ / (sizeof(struct direct))) * i], 1,
         cur_path_inode->di_size % BLOCKSIZ, fd);
-}
 
+
+
+  /* 6. read the pwd directory to initialize the pwd */
+  fseek(fd, DATASTART + BLOCKSIZ * 2, SEEK_SET);
+  fread(&pwd, 1, BLOCKSIZ, fd);
+
+  /* 7. read the filsys to initial the filsys */
+  fseek(fd, BLOCKSIZ, SEEK_SET);
+  fread(&filsys, 1, sizeof(struct filsys), fd);
+
+  fclose(fd);
+  return 0;
+}
