@@ -15,7 +15,7 @@ int login(unsigned short uid, char *passwd) {
         return 0;
       } else {
         user[j].u_uid = uid;
-        user[i].u_gid = pwd[i].p_gid;
+        user[j].u_gid = pwd[i].p_gid;
         user[j].u_default_mode = DEFAULTMODE;
         printf("login success: the uid: %d\n", j);
       }

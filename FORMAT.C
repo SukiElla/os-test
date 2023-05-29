@@ -15,7 +15,7 @@ format() {
   char* buf;
   int i, j;
   /*	creat the file system file */
-  fd = fopen("filesystem", "r+w+b");
+  fd = fopen("filesystem", "rwb+");
   buf = (char*)malloc((DINODEBLK + FILEBLK + 2) * BLOCKSIZ *
                       sizeof(char));  // #0¿super
   if (buf == NULL) {

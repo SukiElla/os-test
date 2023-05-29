@@ -8,7 +8,7 @@
 int install() {
   int i, j;
   /*0.open the file column */
-  fd = fopen("filesystem", "r+w+b");
+  fd = fopen("filesystem", "rwb+");
   if (fd == NULL) {
     printf("\nfilesys can not be loaded\n");
     exit(0);

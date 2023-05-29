@@ -21,18 +21,20 @@ int main() {
   unsigned short bhy_fd1;
   char* buf;
 
+
   format();
   install();
   fclose(fd);
 
-  fd = fopen("filesystem", "r+w+x");
+  fd = fopen("filesystem", "rwb+");
   login(2118, "abcd");
   user_id = 0;
   mkdir("a2118");
   _dir();
   chdir("a2118");
+  _dir();
 
-  ab_fd1 = creat(2118, "ab_file0.c", 01777);
+  ab_fd1 = creat(user_id, "ab_file0.c", 01777);
   _dir();
   printf("\nthe size is %d\n", dir.size);
   buf = (char*)malloc(BLOCKSIZ * 6 + 5);
@@ -44,16 +46,17 @@ int main() {
   _dir();
   chdir("subdir");
   _dir();
-  // ab_fd2 = creat(2118, "file1.c", 01777);
-  // buf = (char*)malloc(BLOCKSIZ * 4 + 20);
-  // write(ab_fd2, buf, BLOCKSIZ * 4 + 20);
-  // close(user_id, ab_fd2);
-  // free(buf);
-  //
+//   ab_fd2 = creat(user_id, "file1.c", 01777);
+//   _dir();
+//   buf = (char*)malloc(BLOCKSIZ * 4 + 20);
+//   write(ab_fd2, buf, BLOCKSIZ * 4 + 20);
+//   close(user_id, ab_fd2);
+//   free(buf);
+
   // chdir("..");
-  // ab_fd3 = creat(2118, "_file2.c", 01777);
+  // ab_fd3 = creat(user_id, "_file2.c", 01777);
   // buf = (char*)malloc(BLOCKSIZ * 10 + 255);
-  // awrite(ab_fd3, buf, BLOCKSIZ * 3 + 255);
+  // write(ab_fd3, buf, BLOCKSIZ * 3 + 255);
   // close(ab_fd3);
   // free(buf);
   //

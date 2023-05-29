@@ -10,11 +10,11 @@ _dir() /* _dir */
   unsigned int di_mode;
   int i, one;
   struct inode *temp_inode;
-  printf("\nCURRENT DIRECTORY is\n");
+  printf("\nCURRENT DIRECTORY is %d\n", dir.size);
   // list the dir
   for (i = 0; i < dir.size; i++) {
     if (dir.direct[i].d_ino != DIEMPTY) {
-      printf("%s", dir.direct[i].d_name);
+      printf("%s ", dir.direct[i].d_name);
       temp_inode = iget(dir.direct[i].d_ino);  // get the inode by ino
       di_mode = temp_inode->di_mode;
       // for (i = 0; i < 9; i++) {
@@ -27,8 +27,8 @@ _dir() /* _dir */
       // }
       if ((temp_inode->di_mode & DIFILE) ==
           DIFILE) {  // if file, print the size and the block chain
-        printf("%d\n", temp_inode->di_size);
-        printf("block chain:");
+        //printf("%d\n", temp_inode->di_size);
+        //printf("block chain:");
         // for (i = 0; i < temp_inode->di_size / BLOCKSIZ + 1; i++)
         //   printf("%4d", temp_inode->di_addr[i]);
         printf("\n");
@@ -140,7 +140,7 @@ chdir(char *dirname) /* chdir */
     fseek(fd, DATASTART + inode->di_addr[i] * BLOCKSIZ, SEEK_SET);
     fread(&dir.direct[0], 1, BLOCKSIZ, fd);
     j += BLOCKSIZ / (sizeof(struct direct));
-  };
+  }
   
   return 0;
 }
