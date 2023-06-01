@@ -62,11 +62,9 @@ unsigned int size;
     return 0;
   }
   temp_buf = buf;
-
   off = sys_ofile[user[user_id].u_ofile[fd1]].f_off;
   block_off = off % BLOCKSIZ;
   block = off / BLOCKSIZ;
-
   if (block_off + size < BLOCKSIZ) {
     fseek(fd, DATASTART + inode->di_addr[block] * BLOCKSIZ + block_off,
           SEEK_SET);
@@ -80,15 +78,16 @@ unsigned int size;
       temp_buf += BLOCKSIZ - block_off;
       k = 1;
   }
+
   for (i = 0; i < (size - k * (BLOCKSIZ -block_off)) / BLOCKSIZ; i++) {
     inode->di_addr[block + 1 + i] = balloc();
     fseek(fd, DATASTART + inode->di_addr[block + k + i] * BLOCKSIZ, SEEK_SET);
     fwrite(temp_buf, 1, BLOCKSIZ, fd);
     temp_buf += BLOCKSIZ;
   }
-
   block_off = (size - block_off) % BLOCKSIZ;
-  block = inode->di_addr[off + size / BLOCKSIZ + 1] = balloc();
+    block =  balloc();
+
   fseek(fd, DATASTART + block * BLOCKSIZ, SEEK_SET);
   fwrite(temp_buf, 1, block_off, fd);
   sys_ofile[user[user_id].u_ofile[fd1]].f_off += size;

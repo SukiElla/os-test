@@ -45,7 +45,7 @@ int main() {
     _dir();
   chdir("subdir");
     _dir();
-   ab_fd2 = creat(user_id, "file1.c", 01777);
+   ab_fd2 = creat(user_id, "ab_file1.c", 01777);
     file_block = BLOCKSIZ * 4 + 20;
    buf = (char*)malloc(BLOCKSIZ * 4 + 20);
    write(ab_fd2, buf, BLOCKSIZ * 4 + 20);
@@ -55,7 +55,7 @@ int main() {
     _dir();
    chdir("..");
     _dir();
-   ab_fd3 = creat(user_id, "file2.c", 01777);
+   ab_fd3 = creat(user_id, "ab_file2.c", 01777);
    file_block = BLOCKSIZ *  3 + 255;
    buf = (char*)malloc(BLOCKSIZ * 3 + 255);
    write(ab_fd3, buf, BLOCKSIZ * 3 + 255);
@@ -73,17 +73,17 @@ int main() {
    close(user_id, ab_fd4);
    free(buf);
 
-//   ab_fd3 = aopen(2118, "ab_file2.c", FAPPEND);
-//   file_block = BLOCKSIZ * 3 + 100;
-//   buf = (char*)malloc(BLOCKSIZ * 3 + 100);
-//   write(ab_fd3, buf, BLOCKSIZ * 3 + 100);
-//   close(ab_fd3);
-//   free(buf);
-//
-//   _dir();
-//   chdir("..");
-//   logout(user_id);
-//   halt();
+   ab_fd3 = aopen(user_id, "ab_file2.c", FAPPEND);
+   file_block = BLOCKSIZ * 3 + 100;
+   buf = (char*)malloc(BLOCKSIZ * 3 + 100);
+   write(ab_fd3, buf, BLOCKSIZ * 3 + 100);
+   close(user_id, ab_fd3);
+   free(buf);
+
+   _dir();
+   chdir("..");
+   logout(user_id);
+   halt();
 }
 
 // open file but not close ,会发生什么

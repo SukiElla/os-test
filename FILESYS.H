@@ -31,7 +31,7 @@
 #define ODIEXICUTE 00400
 #define READ 1
 #define WRITE 2
-#define EXICUTE 3
+#define EXICUTE 4
 #define DEFAULTMODE 00777
 #define IUPDATE 00002
 #define SUPDATE 00001

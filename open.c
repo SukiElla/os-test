@@ -11,7 +11,7 @@ unsigned short openmode;
   struct inode* inode;
   int i, j;
   dinodeid = namei(filename);
-  if (dinodeid != NULL) /* nosuchfile */
+  if (dinodeid == NULL) /* nosuchfile */
   {
     printf("\nfile does not existed!!\n");
     return NULL;
@@ -40,7 +40,7 @@ unsigned short openmode;
     sys_ofile[i].f_off = 0;
   /* alloc the user open file item */
   for (j = 0; j < NOFILE; j++)
-    if (user[user_id].u_ofile[j] == 0) break;
+    if (user[user_id].u_ofile[j] == SYSOPENFILE + 1) break;
   if (j == NOFILE) {
     printf("\nuser open file too much!!! \n");
     sys_ofile[i].f_count = 0;
