@@ -50,13 +50,13 @@ format() {
   inode->di_mode = DEFAULTMODE | DIDIR;
   inode->di_size = 3 * (sizeof(struct direct));
   inode->di_addr[0] = 0; /* block 0tfl is used by the main directory */
-  strcpy(dir_buf[0].d_name, "..");
+  strcpy(dir_buf[0].d_name, ".");
   dir_buf[0].d_ino = 1;
-  strcpy(dir_buf[1].d_name, ".");
+  strcpy(dir_buf[1].d_name, "..");
   dir_buf[1].d_ino = 1;
   strcpy(dir_buf[2].d_name, "etc");
   dir_buf[2].d_ino = 2;
-  printf("the size is %d\n", sizeof(struct direct));
+ // printf("the size is %d\n", sizeof(struct direct));
   fseek(fd, DATASTART, SEEK_SET);
   fwrite(dir_buf, 1, 3 * (sizeof(struct direct)), fd);
   // printf("format.c: the name is %s %d", dir_buf[2].d_name, dir_buf[2].d_ino);
@@ -69,9 +69,9 @@ format() {
   inode->di_mode = DEFAULTMODE | DIDIR;
   inode->di_size = 3 * (sizeof(struct direct));
   inode->di_addr[0] = 0; /* block 0# is used by the etc */
-  strcpy(dir_buf[0].d_name, "..");
+  strcpy(dir_buf[0].d_name, ".");
   dir_buf[0].d_ino = 1;
-  strcpy(dir_buf[1].d_name, ".");
+  strcpy(dir_buf[1].d_name, "..");
   dir_buf[1].d_ino = 2;
   strcpy(dir_buf[2].d_name, "password");
   dir_buf[2].d_ino = 3;
@@ -84,6 +84,12 @@ format() {
   inode->di_mode = DEFAULTMODE | DIFILE;
   inode->di_size = BLOCKSIZ;
   inode->di_addr[0] = 2;
+  for (i = 5; i < PWDNUM; i++)
+  {
+      pwd[i].p_uid = 0;
+      pwd[i].p_gid = 0;
+      strcpy(pwd[i].password, "     ");
+  }
   fseek(fd, DATASTART + 2 * BLOCKSIZ, SEEK_SET);
   fwrite(passwd, 1, BLOCKSIZ, fd);
 

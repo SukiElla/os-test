@@ -13,6 +13,7 @@ unsigned int balloc() {
   };
   free_block = filsys.s_free[filsys.s_pfree];
   if (filsys.s_pfree == NICFREE - 1) {
+      fseek(fd, DATASTART + (562 - filsys.s_nfree) * BLOCKSIZ, SEEK_SET);
     fread(block_buf, 1, BLOCKSIZ, fd);
     free_block_num = block_buf[NICFREE];
     for (i = 0; i < free_block_num; i++) {

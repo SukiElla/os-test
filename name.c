@@ -9,7 +9,7 @@ char *name;
 {
   int i, notfound = 1;
   for (i = 0; ((i < dir.size) && (notfound)); i++) {
-    if ((!strcmp(dir.direct[i].d_name, name)) && (dir.direct[1].d_ino != 0))
+    if ((!strcmp(dir.direct[i].d_name, name)) && (dir.direct[i].d_ino != 0))
       return dir.direct[i].d_ino; /* find */
   }
   /* notfind */
@@ -32,7 +32,7 @@ char *name;
   } else {
     strcpy(dir.direct[i].d_name, name);
     dir.direct[i].d_ino = 1;
-    printf("name: the name is %s, the i is %d\n", name, i);
+    // printf("name: the name is %s, the i is %d\n", name, i);
     return i;
   }
 }
