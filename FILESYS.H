@@ -29,9 +29,9 @@
 #define ODIREAD 00100
 #define ODIWRITE 00200
 #define ODIEXICUTE 00400
-#define READ 1
-#define WRITE 2
-#define EXICUTE 3
+#define READ 1    // on-hot code 001
+#define WRITE 2   // on-hot code 010
+#define EXICUTE 4 // on-hot code 100
 #define DEFAULTMODE 00777
 #define IUPDATE 00002
 #define SUPDATE 00001
